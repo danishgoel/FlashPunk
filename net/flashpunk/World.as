@@ -71,6 +71,13 @@
 		 */
 		public function render():void 
 		{
+			// sort the depth list
+			if (_layerSort)
+			{
+				if (_layerList.length > 1) FP.sort(_layerList, true);
+				_layerSort = false;
+			}
+			
 			// render the entities in order of depth
 			var e:Entity,
 				i:int = _layerList.length;
@@ -920,8 +927,10 @@
 		
 		/**
 		 * Updates the add/remove lists at the end of the frame.
+		 * @param    shouldAdd    If false, entities will not be added
+		                          to the world, only removed.
 		 */
-		public function updateLists():void
+		public function updateLists(shouldAdd:Boolean = true):void
 		{
 			var e:Entity;
 			
@@ -953,7 +962,7 @@
 			}
 			
 			// add entities
-			if (_add.length)
+			if (shouldAdd && _add.length)
 			{
 				for each (e in _add)
 				{
@@ -983,13 +992,6 @@
 					_recycled[e._class] = e;
 				}
 				_recycle.length = 0;
-			}
-			
-			// sort the depth list
-			if (_layerSort)
-			{
-				if (_layerList.length > 1) FP.sort(_layerList, true);
-				_layerSort = false;
 			}
 		}
 		
