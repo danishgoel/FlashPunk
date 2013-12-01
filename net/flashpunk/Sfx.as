@@ -40,8 +40,9 @@
 		 * @param	vol		Volume factor, a value from 0 to 1.
 		 * @param	pan		Panning factor, a value from -1 to 1.
 		 * @param	loop	Sound should loop or not
+		 * @param	pos		position to start sound at in seconds
 		 */
-		public function play(vol:Number = 1, pan:Number = 0, loop:Boolean = false):void
+		public function play(vol:Number = 1, pan:Number = 0, loop:Boolean = false, pos:Number = 0):void
 		{
 			if (_channel) stop();
 			_pan = FP.clamp(pan, -1, 1);
@@ -50,14 +51,20 @@
 			_filteredVol = Math.max(0, _vol * getVolume(_type));
 			_transform.pan = _filteredPan;
 			_transform.volume = _filteredVol;
-			_channel = _sound.play(0, loop ? int.MAX_VALUE : 0, _transform);
+			
+			var _pos:uint = Math.floor(pos * 1000);
+			if (_pos < 0 || _pos > _sound.length) _pos = 0;
+			
+			_channel = _sound.play(_pos, ((loop && _pos == 0) ? int.MAX_VALUE : 0), _transform);
+			
 			if (_channel)
 			{
 				addPlaying();
 				_channel.addEventListener(Event.SOUND_COMPLETE, onComplete);
 			}
+			
 			_looping = loop;
-			_position = 0;
+			_position = _pos;
 		}
 		
 		/**
